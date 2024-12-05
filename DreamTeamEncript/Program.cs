@@ -21,7 +21,6 @@ namespace DreamTeamEncript
             builder.Services.AddScoped<IDbConnection>(sp => new Npgsql.NpgsqlConnection(sp.GetRequiredService<string>()));
 
             // Registrar Dapper con una fábrica de conexiones
-            builder.Services.AddScoped<IDbConnection>(sp => new Npgsql.NpgsqlConnection(sp.GetRequiredService<string>()));
 
             // Registrar clases de ayuda como CustomEncryptionStrings
             builder.Services.AddScoped<CustomEncryptionStrings>();
@@ -35,7 +34,7 @@ namespace DreamTeamEncript
                 {
                     options.LoginPath = "/Account/Login";
                     options.LogoutPath = "/Account/Logout";
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(20); // Tiempo de expiración
+                    options.ExpireTimeSpan = TimeSpan.FromSeconds(120); // Tiempo de expiración
                     options.SlidingExpiration = true;
                 });
 
@@ -54,6 +53,18 @@ namespace DreamTeamEncript
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+            app.Use(async (context, next) =>
+            {
+                // Aplica las cabeceras solo a las rutas protegidas
+                if (context.User.Identity?.IsAuthenticated ?? false)
+                {
+                    context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+                    context.Response.Headers["Pragma"] = "no-cache";
+                    context.Response.Headers["Expires"] = "0";
+                }
+                await next();
+            });
+
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

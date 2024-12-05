@@ -41,6 +41,46 @@
         padding: 2rem 0; /* Add some vertical padding */
         perspective: 1000px;
     }
+
+        :root {
+            --primary-color: #1e90ff;
+            --secondary-color: #2ecc71;
+            --bg-dark: #0f1c2e;
+            --text-light: #e0e6ed;
+            --accent-color: #34495e;
+        }
+        /* Previous CSS remains the same */
+
+        .logout-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+            .logout-btn:hover {
+                background-color: var(--primary-color);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            }
+
+            .logout-btn .logout-icon {
+                margin-right: 0.5rem;
+            }
     .page-container {
         width: 100%;
         max-width: 100%;
@@ -152,11 +192,23 @@
 </style>
 </head>
 <body>
+    <div class="logout-container">
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="logout-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logout-icon">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Cerrar Sesión
+            </button>
+        </form>
+    </div>
+
+
     <div class="page-container">
         <div class="encryptador-container">
-            <a asp-controller="Account" asp-action="Login" class="back-to-login">
-                &#8592; <span>Volver al Login</span>
-            </a>
+           
 
             <h2>Encryptador de Palabras</h2>
 
@@ -213,3 +265,18 @@
     </div>
 </body>
 </html>
+<script>
+    let isNavigatingAway = true;
+
+    // Marca como navegación legítima si se hace clic en un botón o se envía un formulario
+    document.addEventListener("click", () => {
+        isNavigatingAway = false;
+    });
+
+    // Detecta abandono de página
+    window.addEventListener("beforeunload", (event) => {
+        if (isNavigatingAway) {
+            navigator.sendBeacon('/Account/Logout');
+        }
+    });
+</script>

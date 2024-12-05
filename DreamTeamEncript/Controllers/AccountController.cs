@@ -124,7 +124,7 @@ namespace DreamTeamEncript.Controllers
                 var authProperties = new AuthenticationProperties
                 {
                     IsPersistent = true, // La cookie será persistente
-                    ExpiresUtc = DateTime.UtcNow.AddHours(1) // Expiración de la cookie
+                    ExpiresUtc = DateTime.UtcNow.AddSeconds(120) // Expiración de la cookie
                 };
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
@@ -139,12 +139,11 @@ namespace DreamTeamEncript.Controllers
                 return View();
             }
         }
-[HttpPost]
-public async Task<IActionResult> Logout()
-{
-    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-    return RedirectToAction("Login");
-}
-
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Account");
+        }
     }
 }
