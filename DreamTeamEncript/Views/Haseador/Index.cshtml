@@ -1,0 +1,215 @@
+﻿@{
+    ViewData["Title"] = "Encryptador";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="~/css/mediaquery.css" />
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+<style>
+           :root {
+        --primary-color: #1e90ff;
+        --secondary-color: #2ecc71;
+        --bg-dark: #0f1c2e;
+        --text-light: #e0e6ed;
+        --accent-color: #34495e;
+    }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        overflow-x: hidden;
+        overflow-y: auto; /* Allow vertical scrolling */
+    }
+    body {
+        font-family: 'Roboto', 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, var(--bg-dark) 0%, #2c3e50 100%);
+        background-attachment: fixed; /* Keep gradient fixed during scrolling */
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; /* Changed from center to top */
+        padding: 2rem 0; /* Add some vertical padding */
+        perspective: 1000px;
+    }
+    .page-container {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        justify-content: center;
+        padding: 0 1rem;
+    }
+    .encryptador-container {
+        width: 700px;
+        background-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.125);
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        position: relative;
+        margin-top: 2rem; /* Add some top margin */
+    }
+    .back-to-login {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: var(--text-light);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        transition: color 0.3s ease;
+        z-index: 10;
+    }
+    .back-to-login:hover {
+        color: var(--primary-color);
+    }
+    .back-to-login span {
+        margin-left: 0.5rem;
+    }
+    h2 {
+        text-align: center;
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    label {
+        display: block;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: var(--text-light);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 10px rgba(30, 144, 255, 0.4);
+        outline: none;
+    }
+    button {
+        width: 100%;
+        padding: 0.9rem;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+    button:hover {
+        background-color: #2980b9;
+        transform: translateY(-3px);
+    }
+    .result {
+        background-color: rgba(46, 204, 113, 0.2);
+        color: var(--text-light);
+        border: 1px solid rgba(46, 204, 113, 0.3);
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        margin-top: 1rem;
+        word-break: break-all;
+    }
+    .result.error {
+        background-color: rgba(220, 53, 69, 0.2);
+        color: #ff6b6b;
+        border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+    .result.info {
+        background-color: rgba(52, 152, 219, 0.2);
+        color: var(--text-light);
+        border: 1px solid rgba(52, 152, 219, 0.3);
+    }
+    footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: rgba(224, 230, 237, 0.6);
+        font-size: 0.9rem;
+    }
+
+   
+</style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="encryptador-container">
+            <a asp-controller="Account" asp-action="Login" class="back-to-login">
+                &#8592; <span>Volver al Login</span>
+            </a>
+
+            <h2>Encryptador de Palabras</h2>
+
+            <!-- Formulario para hashear -->
+            <form asp-action="Hasear" method="post">
+                <div class="form-group">
+                    <label for="palabra">Palabra para encriptar:</label>
+                    <input type="text" name="palabra" id="palabra" required value="@ViewData["OriginalWord"]" />
+                </div>
+                <div class="form-group">
+                    <label for="key">Llave para encriptar:</label>
+                    <input type="text" name="key" id="key" required value="@ViewData["KeyUsed"]" />
+                </div>
+                <button type="submit">Hashear</button>
+            </form>
+
+            @if (ViewData["HashedWord"] != null)
+            {
+                <div class="result success">
+                    <strong>Texto Encriptado:</strong>
+                    <input type="text" value="@ViewData["HashedWord"]" readonly />
+                </div>
+            }
+
+            <!-- Formulario para deshashear -->
+            <form asp-action="Deshashear" method="post">
+                <div class="form-group">
+                    <label for="encryptedInput">Texto encriptado para desencriptar:</label>
+                    <input type="text" name="encryptedInput" id="encryptedInput" required />
+                </div>
+                <div class="form-group">
+                    <label for="key">Llave para desencriptar:</label>
+                    <input type="text" name="key" id="key" required />
+                </div>
+                <button type="submit">Desencriptar</button>
+            </form>
+
+            @if (ViewData["DecryptedWord"] != null)
+            {
+                <div class="result info">
+                    <strong>Texto Desencriptado:</strong> @ViewData["DecryptedWord"]
+                </div>
+            }
+
+            @if (ViewData["ErrorMessage"] != null)
+            {
+                <div class="result error">
+                    @ViewData["ErrorMessage"]
+                </div>
+            }
+
+            <footer>&copy; 2024 - Encryptador de Palabras</footer>
+        </div>
+    </div>
+</body>
+</html>

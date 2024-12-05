@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Haseador";
+}
+
+<h2>Haseador de Palabras</h2>
+
+<!-- Formulario para hashear -->
+<form asp-action="Hasear" method="post">
+    <div>
+        <label for="palabra">Palabra para encriptar:</label>
+        <input type="text" name="palabra" required value="@ViewData["OriginalWord"]" />
+    </div>
+    <div>
+        <label for="key">Llave para encriptar:</label>
+        <input type="text" name="key" required value="@ViewData["KeyUsed"]" />
+    </div>
+    <button type="submit">Hashear</button>
+</form>
+
+
+@if (ViewData["HashedWord"] != null)
+{
+    <div style="color: green;">
+        <label for="hashedWord">Texto Encriptado:</label>
+        <!-- Mostrar la palabra encriptada en un cuadro de texto -->
+        <input type="text" id="hashedWord" value="@ViewData["HashedWord"]" readonly />
+    </div>
+}
+
+<!-- Formulario para deshashear -->
+<form asp-action="Deshashear" method="post">
+    <div>
+        <label for="encryptedInput">Texto encriptado para desencriptar:</label>
+        <input type="text" name="encryptedInput" required />
+    </div>
+    <div>
+        <label for="key">Llave para desencriptar:</label>
+        <input type="text" name="key" required />
+    </div>
+    <button type="submit">Desencriptar</button>
+</form>
+
+@if (ViewData["DecryptedWord"] != null)
+{
+    <div style="color: blue;">
+        <p><strong>Texto Desencriptado:</strong> @ViewData["DecryptedWord"]</p>
+    </div>
+}
+
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div style="color: red;">
+        <p>@ViewData["ErrorMessage"]</p>
+    </div>
+}
